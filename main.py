@@ -5,6 +5,7 @@ import gspread
 from io import StringIO
 from oauth2client.service_account import ServiceAccountCredentials
 from fastapi.openapi.utils import get_openapi
+from fastapi import FastAPI, Query
 
 app = FastAPI()
 
