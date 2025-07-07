@@ -28,15 +28,21 @@ def get_value(key: int):
             return {"value": row["Value"]}
     return {"value": None, "message": "Key not found"}
 
-@app.get("/openapi.json", include_in_schema=False)
 def custom_openapi():
+    if app.openapi_schema:
+        return app.openapi_schema
     openapi_schema = get_openapi(
         title="FastAPI",
         version="0.1.0",
         routes=app.routes,
     )
     openapi_schema["servers"] = [
-        {"url": "https://sheets-fastapi.onrender.com"}
+        {
+            "url": "https://sheets-fastapi.onrender.com"  # Make sure this matches your actual deployed URL
+        }
     ]
-    return openapi_schema
+    app.openapi_schema = openapi_schema
+    return app.openapi_schema
 
+# 👇 This is the critical part
+app.openapi = custom_openapi
