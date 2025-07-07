@@ -19,14 +19,26 @@ client = gspread.authorize(creds)
 SHEET_NAME = "Example"
 WORKSHEET_NAME = "Sample"
 
-@app.get("/get_value")
-def get_value(key: int):
+
+@app.get("/shipping_info")
+def get_shipping_info(
+    sku: str = Query(..., description="SKU like 'wrb-rg-luna-6-rg'")
+):
     sheet = client.open(SHEET_NAME).worksheet(WORKSHEET_NAME)
-    records = sheet.get_all_records()
-    for row in records:
-        if row["Key"] == key:
-            return {"value": row["Value"]}
-    return {"value": None, "message": "Key not found"}
+    data = sheet.get_all_records()
+    
+    for row in data:
+        if row["SKUs"] == sku:
+            return {
+                "sku": row["SKUs"],
+                "size": row["Unnamed: 0"],
+                "color": row["Colour"],
+                "can_ship_tomorrow": row.get("Can be shipped tomorrow", 0),
+                "can_ship_in_2_days": row.get("Can be shipped in 2 days", 0),
+                "can_ship_in_4_days": row.get("Can be shipped in 4 days", 0)
+            }
+    
+    return {"error": f"No row found with SKU {sku}"}
 
 def custom_openapi():
     if app.openapi_schema:
