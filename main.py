@@ -4,6 +4,7 @@ import json
 import gspread
 from io import StringIO
 from oauth2client.service_account import ServiceAccountCredentials
+from fastapi.openapi.utils import get_openapi
 
 app = FastAPI()
 
@@ -26,4 +27,16 @@ def get_value(key: int):
         if row["Key"] == key:
             return {"value": row["Value"]}
     return {"value": None, "message": "Key not found"}
+
+@app.get("/openapi.json", include_in_schema=False)
+def custom_openapi():
+    openapi_schema = get_openapi(
+        title="FastAPI",
+        version="0.1.0",
+        routes=app.routes,
+    )
+    openapi_schema["servers"] = [
+        {"url": "https://sheets-fastapi.onrender.com"}
+    ]
+    return openapi_schema
 
