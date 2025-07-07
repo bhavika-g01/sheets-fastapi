@@ -23,7 +23,7 @@ WORKSHEET_NAME = "Sample"
 
 @app.get("/shipping_info")
 def get_shipping_info(
-    sku: str = Query(..., description="SKU like 'wrb-rg-luna-6-rg'")
+    sku: str = Query(..., description="SKU like 'wrb-rg-luna-6-rgld-2'")
 ):
     sheet = client.open(SHEET_NAME).worksheet(WORKSHEET_NAME)
     data = sheet.get_all_records()
